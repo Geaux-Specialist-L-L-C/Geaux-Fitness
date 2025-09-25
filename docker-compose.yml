@@ -1,32 +1,26 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend
+  app:
+    build: .
+    container_name: fitness-habit-app
     ports:
-      - '5000:5000'
-    env_file:
-      - ./backend/.env
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/fitnessapp
     depends_on:
       - mongo
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../Dockerfile.frontend
-    ports:
-      - '3000:3000'
-    environment:
-      - API_URL=http://localhost:5000
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+    restart: unless-stopped
 
   mongo:
-    image: mongo:6
-    container_name: mongo
-    restart: always
+    image: mongo:6.0
+    container_name: fitness-habit-mongo
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
